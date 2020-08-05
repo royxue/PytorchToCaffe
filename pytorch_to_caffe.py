@@ -10,12 +10,12 @@ import numpy as np
 
 """
 How to support a new layer type:
- layer_name=log.add_layer(layer_type_name)
- top_blobs=log.add_blobs(<output of that layer>)
- layer=caffe_net.Layer_param(xxx)
- <set layer parameters>
- [<layer.add_data(*datas)>]
- log.cnet.add_layer(layer)
+layer_name=log.add_layer(layer_type_name)
+top_blobs=log.add_blobs(<output of that layer>)
+layer=caffe_net.Layer_param(xxx)
+<set layer parameters>
+[<layer.add_data(*datas)>]
+log.cnet.add_layer(layer)
 
 Please MUTE the inplace operations to avoid not find in graph
 
@@ -56,11 +56,15 @@ class TransLog(object):
         self.cnet = caffe_net.Caffemodel()
         self.debug = True
 
-    def init(self, inputs):
+    def init(self, _input):
         """
         :param inputs: is a list of input variables
         """
-        self.add_blobs(inputs)
+        name = self.add_layer("image")
+        self.add_blobs([_input])
+        layer = caffe_net.Layer_param(name=name, type="Input", top=[self.blobs(_input)])
+        layer.input_param(_input)
+        self.cnet.add_layer(layer)
 
     def add_layer(self, name='layer'):
         if name in self.layers:
@@ -734,10 +738,9 @@ def _expand_as(input, *args):
     log.cnet.add_layer(layer)
     return x
 
-# 核心组件，通过该类，实现对torch的function中的operators的输入，输出以及参数的读取
-
 
 class Rp(object):
+    # 核心组件，通过该类，实现对torch的function中的operators的输入，输出以及参数的读取
     def __init__(self, raw, replace, **kwargs):
         # replace the raw function to replace function
         self.obj = replace
@@ -840,10 +843,10 @@ except Exception:
 
 def trans_net(net, input_var, name='TransferedPytorchModel'):
     print('Starting Transform, This will take a while')
-    log.init([input_var])
-    log.cnet.net.name = name
-    log.cnet.net.input.extend([log.blobs(input_var)])
-    log.cnet.net.input_dim.extend(input_var.size())
+    log.init(input_var)
+    # log.cnet.net.name = name
+    # log.cnet.net.input.extend([log.blobs(input_var)])
+    # log.cnet.net.input_dim.extend(input_var.size())
     global NET_INITTED
     NET_INITTED = True
     for name, layer in net.named_modules():

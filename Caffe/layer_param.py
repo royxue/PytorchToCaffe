@@ -168,6 +168,13 @@ class Layer_param():
                     upsample_w = size[1] * scale_factor
         self.param.upsample_param.CopyFrom(upsample_param)
 
+    def input_param(self, _input):
+        input_param = pb.InputParameter()
+        shape = input_param.shape.add()
+        for dim in _input.shape:
+            shape.dim.append(dim)
+        self.param.input_param.CopyFrom(input_param)
+
     def add_data(self, *args):
         """Args are data numpy array
         """

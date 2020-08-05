@@ -100,7 +100,7 @@ class Prototxt(_Net):
             f.write(str(s))
         import os
         os.system('%s train --solver /tmp/nn_tools_solver.prototxt' %
-                  caffe_cmd_path)
+                    caffe_cmd_path)
 
 
 class Caffemodel(_Net):
@@ -150,8 +150,3 @@ class Caffemodel(_Net):
         for blob, data in zip(layer.blobs, datas):
             blob.data[:] = data.flatten()
             pass
-
-
-class Net():
-    def __init__(self, *args, **kwargs):
-        raise(TypeError, 'the class Net is no longer used, please use Caffemodel or Prototxt instead')
