@@ -11,15 +11,15 @@ from ..funcs import Logger
 
 
 def train_classification_net(net, trainloader, testloader=None, save_path='/tmp/pytorch_train_tmp.pth', base_lr=0.01,
-                             num_epoch=5, use_cuda=True, optimizer=None, lr_change=None,
-                             print_iter=500, save_tmp_epoch=10, log=True, criterion=None):
+                            num_epoch=5, use_cuda=True, optimizer=None, lr_change=None,
+                            print_iter=500, save_tmp_epoch=10, log=True, criterion=None):
     # train a classification net
     # the trainloader should return (input, labels(not one-hot version))
     # the criterion is CrossEntropyLoss by default
     logger = Logger(log and save_path+'.log' or None)
-    if optimizer == None:
+    if optimizer is None:
         optimizer = optim.Adam(net.parameters(), lr=base_lr)
-    if criterion == None:
+    if criterion is None:
         criterion = nn.CrossEntropyLoss()
     if use_cuda:
         criterion = criterion.cuda()

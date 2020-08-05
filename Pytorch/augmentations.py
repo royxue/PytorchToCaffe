@@ -29,10 +29,8 @@ def jaccard_numpy(box_a, box_b):
     if box_a.ndim == 1:
         box_a = box_a.reshape([1, -1])
     inter = intersect(box_a, box_b)
-    area_a = ((box_a[:, 2]-box_a[:, 0]) *
-              (box_a[:, 3]-box_a[:, 1]))  # [A,B]
-    area_b = ((box_b[2]-box_b[0]) *
-              (box_b[3]-box_b[1]))  # [A,B]
+    area_a = ((box_a[:, 2]-box_a[:, 0]) * (box_a[:, 3]-box_a[:, 1]))  # [A,B]
+    area_b = ((box_b[2]-box_b[0]) * (box_b[3]-box_b[1]))  # [A,B]
     union = area_a + area_b - inter
     return inter / union  # [A,B]
 
@@ -136,8 +134,7 @@ class Resize(object):
         self.size = size
 
     def __call__(self, image, *args):
-        image = cv2.resize(image, (self.size,
-                                   self.size))
+        image = cv2.resize(image, (self.size, self.size))
         if len(args):
             return (image,)
         else:
@@ -187,8 +184,7 @@ class RandomChannel(object):
         random_switch = np.random.randint(0, 2, channels)
         for i in range(channels):
             if random_switch[i]:
-                image[:, :,
-                      i] += np.uint8(random.uniform(-self.delta, self.delta))
+                image[:, :, i] += np.uint8(random.uniform(-self.delta, self.delta))
                 image[image > 255.0] = 255
                 image[image < 0.0] = 0
         if len(args):
@@ -217,8 +213,8 @@ class RandomValue(object):
 class RandomLightingNoise(object):
     def __init__(self):
         self.perms = ((0, 1, 2), (0, 2, 1),
-                      (1, 0, 2), (1, 2, 0),
-                      (2, 0, 1), (2, 1, 0))
+                    (1, 0, 2), (1, 2, 0),
+                    (2, 0, 1), (2, 1, 0))
 
     def __call__(self, image, *args):
         if random.randint(2):
@@ -502,7 +498,7 @@ class SSD_Expand(object):
             dtype=image.dtype)
         expand_image[:, :, :] = self.mean
         expand_image[int(top):int(top + height),
-                     int(left):int(left + width)] = image
+                    int(left):int(left + width)] = image
         image = expand_image
 
         boxes = boxes.copy()
@@ -587,13 +583,13 @@ class SSDAugmentation(object):
 
 
 def get_advanced_transform(dim, padding=5, random_crop=5, hue=True,
-                           saturation=True, value=True, horizontal_flip=True,
-                           random_noise=0, mean=(127.5, 127.5, 127.5), std=(127.5, 127.5, 127.5),
-                           other_functions=()):
+                            saturation=True, value=True, horizontal_flip=True,
+                            random_noise=0, mean=(127.5, 127.5, 127.5), std=(127.5, 127.5, 127.5),
+                            other_functions=()):
     # loader must be cv2 loader
     # other functions will be added after the HSV transform
     trans = []
-    if dim != None:
+    if dim is not None:
         trans.append(Scale(dim))
     if padding:
         trans.append(Padding(int(padding)))

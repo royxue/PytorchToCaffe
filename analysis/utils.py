@@ -15,9 +15,9 @@ def get_human_readable(num):
 
 
 def save_csv(layers, csv_save_path='/tmp/analyse.csv',
-             save_items=('name', 'layer_info', 'input', 'out', 'dot',
-                         'add', 'compare', 'ops', 'weight_size', 'activation_size'),
-             print_detail=True, human_readable=True):
+            save_items=('name', 'layer_info', 'input', 'out', 'dot',
+                        'add', 'compare', 'ops', 'weight_size', 'activation_size'),
+            print_detail=True, human_readable=True):
     # layers = get_layer_blox_from_blobs(blobs)
     print_list = []
     sum = [0]*len(save_items)
@@ -34,7 +34,7 @@ def save_csv(layers, csv_save_path='/tmp/analyse.csv',
             try:
                 num = int(item)
                 sum[idx] += num
-            except:
+            except Exception:
                 pass
             print_line.append(s)
         print_list.append(print_line)
@@ -52,7 +52,7 @@ def save_csv(layers, csv_save_path='/tmp/analyse.csv',
                 else:
                     print_list.append('%s:%.3e' % (save_items[idx], item))
         print(print_list)
-    if csv_save_path != None:
+    if csv_save_path is not None:
         with open(csv_save_path, 'w') as file:
             writer = csv.writer(file)
             writer.writerow(save_items)
@@ -68,7 +68,7 @@ def get_layer_blox_from_blobs(blobs):
         for father in blob.father:
             if isinstance(father, Base) and father not in layers:
                 layers.append(father)
-                if father.muti_input == True:
+                if father.muti_input is True:
                     for input in father.input:
                         creator_search(input)
                 else:
@@ -85,11 +85,11 @@ def print_table(datas, names):
         try:
             i = int(float(i))
             types.append('I')
-        except:
+        except Exception:
             types.append('S')
-    for l in datas:
+    for data in datas:
         s = ''
-        for i, t in zip(l, types):
+        for i, t in zip(data, types):
             if t == 'I':
 
                 i = int(float(i))
@@ -119,6 +119,6 @@ def print_by_blob(blobs, print_items=('name', 'layer_info', 'input', 'out', 'dot
     print_list = []
     for layer in layers:
         print_list.append([str(getattr(layer, param))
-                           for param in print_items])
+                            for param in print_items])
     pprint.pprint(print_list, depth=3, width=200)
     return print_list

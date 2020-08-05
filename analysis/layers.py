@@ -38,7 +38,7 @@ class Base(object):
         return self.out
 
     def __setattr__(self, key, value):
-        if key == 'out' and value != None:
+        if key == 'out' and value is not None:
             if type(value) is list:
                 self.activation_size = 0
                 for i in value:
@@ -51,7 +51,7 @@ class Base(object):
         if item == 'ops':
             try:
                 self.ops = self.pow+self.add+self.dot+self.compare
-            except:
+            except Exception:
                 print("CRITICAL WARNING: Layer {} ops cannot be calculated, set to 0.".format(
                     self.name))
                 self.ops = 0
@@ -65,7 +65,7 @@ class Norm(Base):
         if type not in Norm.valid_tuple:
             raise NameError('the norm type:' + type + ' is not supported. '
                             'the valid type is: ' + str(Activation.valid_tuple))
-        if name == None:
+        if name is None:
             name = type
         Base.__init__(self, input, name=name)
         getattr(self, type)()
@@ -92,7 +92,7 @@ class Activation(Base):
         if type not in Activation.valid_tuple:
             raise NameError('the activation type:'+type+' is not supported. '
                             'the valid type is: '+str(Activation.valid_tuple))
-        if name == None:
+        if name is None:
             name = type
         Base.__init__(self, input, name=name)
         getattr(self, type)()
@@ -153,9 +153,7 @@ class Sliding(Base):
                 self.pad = [0] * conv_dims
         self.num_out = num_out
         self.layer_info = 'kernel=%s,stride=%s,pad=%s' % ('x'.join([str(_) for _ in self.kernel_size]),
-                                                          'x'.join(
-            [str(_) for _ in self.stride]),
-            'x'.join([str(_) for _ in self.pad]))
+                            'x'.join([str(_) for _ in self.stride]), 'x'.join([str(_) for _ in self.pad]))
         if transpose:
             self.layer_info += ',transpose'
         # calc out
@@ -192,11 +190,11 @@ class Sliding(Base):
 
 class Conv(Sliding):
     def __init__(self, input, kernel_size, num_out, stride=1, pad=0,
-                 activation='relu', name='conv', ceil=False, group_size=1, transpose=False):
+                activation='relu', name='conv', ceil=False, group_size=1, transpose=False):
         if isinstance(input, Base):
             input = input()
         Sliding.__init__(self, input, kernel_size, num_out,
-                         stride, pad, name=name, ceil=ceil, transpose=transpose)
+                        stride, pad, name=name, ceil=ceil, transpose=transpose)
         self.layer_info += ',num_out=%d' % (num_out)
         self.dot = np.prod(self.out.shape) * \
             np.prod(self.kernel_size) * self.in_channel
@@ -217,7 +215,7 @@ class Pool(Sliding):
         if isinstance(input, Base):
             input = input()
         Sliding.__init__(self, input, kernel_size, input.c,
-                         stride, pad, name=name, ceil=ceil)
+                        stride, pad, name=name, ceil=ceil)
         self.pool_type = pool_type
         self.layer_info += ',type=%s' % (pool_type)
         if pool_type in ['max', 0]:
